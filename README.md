@@ -24,8 +24,10 @@ Made by Tommy Martin. Built while running [ClubPlugins](https://clubplugins.com)
 14. [Nightly private source backup](#14-nightly-private-source-backup)
 15. [Reports and a COO session](#15-reports-and-a-coo-session)
 16. [What is automated, honestly](#16-what-is-automated-honestly)
-17. [Checklist](#17-checklist)
-18. [What Claude should never do for you](#18-what-claude-should-never-do-for-you)
+17. [What it cost](#17-what-it-cost)
+18. [Tax considerations](#18-tax-considerations)
+19. [Checklist](#19-checklist)
+20. [What Claude should never do for you](#20-what-claude-should-never-do-for-you)
 
 ## 1. Who does what
 
@@ -73,7 +75,7 @@ What we ended up with:
 - **Static site on a static host** (we used Netlify). Claude writes the site, previews it locally, and builds a deploy folder. A static site is cheap, fast and has almost nothing to attack.
 - **Forms:** use the host's form handling or a small serverless function for newsletter or waitlist signup. Claude writes it; the human creates the account at the email-list provider and decides what consent wording is shown.
 - **Redirects as a stable interface.** Never hard-code a payment link in an app or email. Point everything at `yoursite.com/buy/<product>` and let a redirect file map it to the current link. When prices or links change, you change one file, and old installers keep working.
-- **Know the host's limits before launch week.** Our host's free plan gave a monthly allowance of build credits. We used it up redeploying many times in the first days, and a production deploy came back "Forbidden" with a product fix waiting to go out. The human upgraded the plan and it worked within the hour. The lesson is to read the plan limits before launch, batch deploys, and know that anything urgent (for example, a revoked-licence list) also needs a deploy path.
+- **Know the host's limits before launch week.** Our host's free plan gave a monthly allowance of build credits. We used it up redeploying many times in the first days, and a production deploy came back "Forbidden" with a product fix waiting to go out. The human upgraded the plan and it worked within the hour (what it cost: [section 17](#17-what-it-cost)). The lesson is to read the plan limits before launch, batch deploys, and know that anything urgent (for example, a revoked-licence list) also needs a deploy path.
 - **Facts-only copy.** After rebuilding the site more than once, we settled on plain fact lists, spec tables and real screenshots, not marketing sentences. No clipped slogans.
 - **Heads-review before the human sees it.** Before any page reaches the founder, have a second pass (a different session) check numbers, spellings and claims.
 - **Deploy only on the human's yes,** and keep a dated `.bak` of whatever you replace.
@@ -86,10 +88,11 @@ You need, at minimum: **terms of sale, a privacy policy, and an end-user licence
 - **Facts must match the product.** Our site and EULA once disagreed after a product decision changed what a free edition included. After any pricing or scope decision, have Claude search every page, EULA, email and in-app string for the old wording.
 - **Third-party notices:** one file per product listing every bundled library and its licence. Claude can generate it from the build; the human spot-checks it.
 - **Link the legal pages from the checkout and the installer,** not only the footer.
-- **Do not click "accept" for the human** on any terms or consent screen (section 18).
+- **Do not click "accept" for the human** on any terms or consent screen (section 20).
 
 ## 6. Payments
 
+- **What payments cost, and the tax side.** Stripe's fees, Stripe Tax and the choice between a payment processor and a merchant of record are in [What it cost](#17-what-it-cost) and [Tax considerations](#18-tax-considerations).
 - **Test mode first, always.** We used Stripe, and the CLI. Create products, prices and payment links in the sandbox, run a full test purchase, and only then repeat in live mode. Each CLI command prints which account it is running in; Claude checks that line says sandbox before creating anything.
 - **Live mode is the human's decision.** Switching on live mode, accepting the processor's extra terms, and running any script with a live key is done by the human. Claude never runs a command in live mode without an explicit yes, and never enters or stores a key.
 - **Payment links:** quick to set up and need no code. Gotchas we hit: with automatic tax on, a payment link would not create until the product had a tax code; and the processor could not limit a coupon to one use per customer, so each customer gets a promotion code with a redemption limit of one.
@@ -157,9 +160,11 @@ If you sell digital goods to customers in other countries, you may owe tax there
 - **Until you have the registration number, do not show tax or a tax number on receipts.**
 - **When it arrives:** enter the registration in the payment processor's tax settings, note the effective date, and work out what is owed on sales since then. If the authority has asked for documents and you hear nothing, ask early.
 - Take advice from an accountant. This is the section most likely to differ in your case.
+- **Worked example, with sources:** what we applied for, what we have not registered for yet, and the rules for the US, EU, UK and Latin America are in [Tax considerations](#18-tax-considerations). The fees we paid are in [What it cost](#17-what-it-cost).
 
 ## 13. Ads
 
+- **What it cost.** Our ad spend to date and how we track it are in [What it cost](#17-what-it-cost). Ad spend is deductible, but selling into countries where you are not registered for tax is a risk: see [Tax considerations](#18-tax-considerations).
 - **Claude makes the creative; the human clicks publish.** Claude produces images, video, captions and tracked links (UTM tags), prepares the campaign setup as a checklist (objective, placements, countries, schedule), and checks everything against the site.
 - **Every ad shows the real product interface.** A type-only ad sells an idea. For software, the interface is the product. Use a fresh screenshot from the shipping build, never a stale one, and never a competitor's.
 - **Facts, not slogans,** and no claims without a test behind them (see problem-first-framework).
@@ -211,7 +216,118 @@ For how to run the sessions themselves, see the playbook. The business-specific 
 
 What is lightly used or new: the Windows pipeline, the signing for Windows, the further hardening of licence protection, and the tax registration follow-up. Treat those as in progress.
 
-## 17. Checklist
+## 17. What it cost
+
+**Roughly $2,300 to get from nothing to a live company with products on sale, in about three weeks** (late September to 20 October 2026). That's an estimate from our own books and dashboards, rounded; revenue is left out.
+
+| Where it went | Share | Roughly |
+|---|--:|--:|
+| AI (Claude plan + extra usage for running many sessions at once) | ~70% | ~$1,600 |
+| Company setup (LLC filing, registered agent) | ~15% | ~$375 |
+| Ads (Meta / Instagram) | ~7% | ~$170 |
+| Developer accounts and hosting (Apple Developer, domain, website host) | ~6% | ~$130 |
+| Everything else (email tools) | ~2% | ~$40 |
+
+What that tells you:
+- **The AI is the business's biggest cost by far**, and most of it is usage beyond the plan from running many sessions in parallel. Pacing it (playbook section 6, [claude-local-first](https://github.com/tsmartin29/claude-local-first)) is the biggest lever.
+- **The fixed costs of the business itself are small:** hosting, domain, developer account and registered agent come to roughly $60 a month plus a few hundred dollars a year.
+- **Plenty of what you need is free:** email forwarding, transactional email at low volume, GitHub CI, the audio framework's free tier, the bank account, the EIN, and UK VAT registration.
+- **Payments cost per sale, not per month** (card processing plus optional automatic sales tax), so there's nothing to pay until you sell.
+
+Coming later: trademark filings, Windows code signing (about $10 a month), an accountant for filings, and the next audio-framework tier if revenue passes its free limit.
+
+For what these costs mean at tax time, see the next section.
+
+## 18. Tax considerations
+
+**This is not tax advice. We use a CPA and an attorney, and so should you.** It is a plain-language map of the questions a one-person US LLC selling software worldwide has to answer, written in October 2026, with what we did about each. Tax law changes, and several points below are marked as uncertain. Where a source is cited, read the source, not our summary.
+
+### Income tax on a one-person LLC
+
+- **Default treatment.** A single-member LLC is "disregarded" for federal income tax unless it elects to be taxed as a corporation. The profit is reported on the owner's personal return (Schedule C) and the owner pays tax on it whether or not it is withdrawn. Source: [IRS, single member limited liability companies](https://www.irs.gov/businesses/small-businesses-self-employed/single-member-limited-liability-companies).
+- **Self-employment tax.** Net earnings are also subject to self-employment tax (Social Security and Medicare), the way a sole proprietor's are. Source: [IRS Topic 554](https://www.irs.gov/taxtopics/tc554). Half of it is deductible.
+- **Estimated payments.** There is no employer withholding, so you generally pay estimated tax quarterly. Source: [IRS Topic 306](https://www.irs.gov/taxtopics/tc306).
+- **Questions for your CPA, not conclusions:** whether to elect S-corporation treatment once profits are steady, how the qualified business income deduction applies, and what your state and city charge. We have not elected anything; we have not had a profit yet.
+- **Keep the LLC's money separate.** Our books are the LLC's alone. Costs the owner paid personally before the bank account existed are recorded as owed to the owner, and the owner decides later whether they are repaid or counted as extra capital. Ask your CPA how to treat that.
+
+### What is deductible
+
+- **The test** is "ordinary and necessary" for the business. Source: [IRS Publication 535](https://www.irs.gov/publications/p535).
+- **For a software business that normally means:** developer-programme fees, hosting and domain, software subscriptions, AI plans and pay-as-you-go usage, transactional email, payment fees, ads, state filing fees and the registered agent, and professional fees. Everything in section 17 is in this family; whether a given line is deducted now, spread out or treated as a startup cost is the CPA's call.
+- **Startup costs.** Costs paid before the business opens are treated differently from running costs: a limited amount can be deducted at once and the rest spread over 15 years. Source: Publication 535 (startup costs) and [IRC section 195](https://www.law.cornell.edu/uscode/text/26/195). The line between "before" and "after" the business began is a CPA question.
+- **Home office.** Only if part of the home is used regularly and exclusively for the business. Source: [IRS Publication 587](https://www.irs.gov/publications/p587). Do not claim a shared desk.
+- **Mixed-use costs.** An AI plan or phone used for both personal and business work is deductible only for the business share. Keep the split written down.
+
+### Software development costs: section 174 and 174A
+
+This area changed in 2025 and is the one most likely to be out of date, so confirm it with your CPA.
+
+- **Before 2025.** From tax years beginning in 2022, section 174 forced companies to capitalise research and experimental costs, including software development, and write them off over five years (domestic) or fifteen (foreign), rather than deduct them at once.
+- **Since the 2025 law.** Public Law 119-21 (the "One Big Beautiful Bill Act", 4 July 2025) added **section 174A**. For tax years beginning after 31 December 2024, domestic research and experimental costs can be deducted in the year paid or incurred. The statute says that amounts paid to develop software count as research and experimental costs. A taxpayer can instead elect to capitalise and amortise them over at least 60 months. The election is made by the return's due date, including extensions, and sticks for later years. Foreign research is still capitalised and amortised over 15 years. Sources: [26 U.S.C. 174A](https://www.law.cornell.edu/uscode/text/26/174A) and [26 U.S.C. 174](https://www.law.cornell.edu/uscode/text/26/174).
+- **Transition.** The Act lets eligible small businesses apply the change retroactively to 2022 to 2024, and lets others deduct the leftover unamortised amounts from those years in 2025 or across 2025 and 2026. The procedure is in [IRS Revenue Procedure 2025-28](https://www.irs.gov/pub/irs-drop/rp-25-28.pdf). A company formed in 2026 has little or no such history, though development the owner did earlier as an individual may matter; ask.
+- **What we are unsure of.** Whether work done with overseas contractors, or with tools running abroad, counts as "foreign research" is a definition you should ask about before assuming immediate deduction. Whether AI usage fees are research costs, or ordinary expenses, is also a CPA call. We have not made an election; this is queued for our CPA.
+- **Interaction with the credit.** Domestic costs are generally reduced by the amount of the research credit you claim (section 280C(c)); ask how that interacts.
+
+### The research credit (section 41), briefly
+
+- It is a credit for qualified research, claimed on [Form 6765](https://www.irs.gov/instructions/i6765). Software can qualify, and it has to pass the four-part test in the instructions.
+- A very new company with small gross receipts can elect to use part of it against **payroll tax**, up to a yearly cap. Source: [IRS, payroll tax credit for small businesses](https://www.irs.gov/businesses/small-businesses-self-employed/qualified-small-business-payroll-tax-credit-for-increasing-research-activities).
+- **For a one-person company with no employees, that is probably worth little,** because there is no payroll tax to offset. We have not claimed anything. It becomes interesting once you hire. Record time and costs from day one if you think you may claim later.
+
+### US sales tax
+
+- **Where the obligation comes from.** Since *South Dakota v. Wayfair* (2018), a state can require a remote seller to collect sales tax once sales into that state pass a threshold, with no physical presence needed. Source: [the decision](https://www.law.cornell.edu/supremecourt/text/17-494).
+- **Typical thresholds** are $100,000 of sales into a state, and in some states 200 transactions. The numbers differ by state and change, so read the state's own revenue department page.
+- **Whether your product is taxable is a separate question.** States treat downloaded software, SaaS and digital goods differently, sometimes in surprising ways, and some cities add their own taxes. There is no single national answer. Source for an overview: [Stripe, digital product tax](https://stripe.com/resources/more/digital-product-tax).
+- **Our home state.** Our books recorded Illinois sales tax registration as needed before going live. Check your own state's page (for Illinois, [MyTax Illinois](https://mytax.illinois.gov)) and any city taxes.
+- **Tool: Stripe Tax.** We switched on automatic tax in Stripe at launch. It calculates the tax on each sale, tells you where you are close to a threshold, and can help you register and file, but **you remain the seller and the one responsible** unless you use a merchant of record (below). Its price is a percentage of each transaction where it collects tax (we budgeted 0.5%; verify). Sources: [Stripe Tax](https://docs.stripe.com/tax), [supported countries](https://docs.stripe.com/tax/supported-countries), [registering](https://docs.stripe.com/tax/registering), [filing](https://docs.stripe.com/tax/filing).
+- **Our prices include tax.** We chose tax-inclusive prices, so where we are registered the tax comes out of the sticker price instead of being added on top.
+
+### EU VAT on digital services
+
+- **There is no minimum for sellers outside the EU.** Digital services sold to consumers are taxed in the buyer's country, from the first sale. A non-EU seller can register once, in any one member state, under the "non-Union" One Stop Shop scheme and file a quarterly return covering all EU countries, and a country cannot require a tax representative for it. Sources: [European Commission, One Stop Shop](https://vat-one-stop-shop.ec.europa.eu/one-stop-shop_en), [registering](https://vat-one-stop-shop.ec.europa.eu/one-stop-shop/register-oss_en), [declaring and paying](https://vat-one-stop-shop.ec.europa.eu/one-stop-shop/declare-and-pay-oss_en).
+- **What we did:** we have not registered. Until we do, our ads in EU countries (Ireland is one of our ad countries) promote only free products or a teaser for something not yet on sale. See "Other countries" below.
+- **Uncertain:** how downloadable perpetual-licence software is classified under the EU rules, and the treatment of sales to EU businesses with a VAT number. Ask.
+
+### UK VAT for sellers based abroad
+
+- **There is no registration threshold** for a business with no UK establishment: a taxable supply of any value to UK consumers can require registration, within 30 days of the first. Sources: [GOV.UK, VAT rules for digital services to consumers](https://www.gov.uk/guidance/the-vat-rules-if-you-supply-digital-services-to-private-consumers), [HMRC VAT registration manual on non-established taxable persons](https://www.gov.uk/hmrc-internal-manuals/vat-registration-manual/vatreg37210), [VAT Notice 700/1](https://www.gov.uk/government/publications/vat-notice-7001-should-i-be-registered-for-vat/vat-notice-7001-should-i-be-registered-for-vat).
+- **What we did:** we applied online in October. HMRC says it decides within about 40 working days of receiving the documents. The **application number is not the registration number**; we show no VAT on receipts until the registration number arrives, then add the registration to Stripe Tax and work out what is owed on UK sales since the effective date. Registering costs nothing. Our prices are tax-inclusive, so one-sixth of a UK sale is owed once registered.
+- **Uncertain:** whether the effective date can be backdated to the first sale. Keep every UK sale record from day one.
+
+### Other countries' digital VAT
+
+- Many countries tax digital services sold by foreign sellers, and some have no minimum. Mexico, Chile and Colombia each require non-resident digital sellers to register and charge VAT (about 16%, 19% and 19%). Sources: [BPM on Mexico](https://www.bpm.com/insights/mexico-vat-on-digital-services-provided-by-non-residents/), [RSM on Latin America](https://rsmus.com/insights/services/business-tax/value-added-tax-compliance-latin-america-digital-businesses.html); check the authorities themselves (SAT, SII, DIAN) because we only found secondary sources. Stripe lists the countries where it can calculate the tax: [supported countries](https://docs.stripe.com/tax/supported-countries).
+- **What we did:** in Spain and Latin America we advertise only **free** products, because we have not registered for VAT there and do not want to sell what we cannot account for. A free download has no price to tax, but some countries have their own rules for free digital supplies, so this is a decision to review, not a guarantee.
+
+### 1099-K from Stripe
+
+- Stripe may send a Form 1099-K reporting your gross card payments. The federal threshold for payment apps and marketplaces went back to $20,000 and 200 transactions under the 2025 law, but card payments have no minimum in the IRS guidance, and platforms can send forms below the thresholds. Sources: [IRS, 1099-K threshold FAQs](https://www.irs.gov/newsroom/irs-issues-faqs-on-form-1099-k-threshold-under-the-one-big-beautiful-bill-dollar-limit-reverts-to-20000), [IRS Form 1099-K FAQs](https://www.irs.gov/newsroom/form-1099-k-faqs-general-information).
+- **It reports gross sales,** before fees, refunds and the sales tax you collected. Your return should start from your own books and explain the difference. You owe tax on the income whether or not a form arrives.
+
+### Records
+
+- Keep receipts, statements and a ledger with a **proof column** (where the receipt is saved). Mark estimates "approx." and replace them with the receipt. Source: [IRS Publication 583](https://www.irs.gov/publications/p583) and [Topic 305](https://www.irs.gov/taxtopics/tc305).
+- Our books have separate sheets for the bank account, Stripe sales (with collected tax kept apart, because it is not ours), costs the owner paid personally, planned costs, and the owner's capital. They are matched to the bank statement monthly. Claude drafts the ledger; a human confirms every figure.
+- Keep tax you collect from buyers in a separate liability account. It is not income.
+
+### A merchant of record changes the picture
+
+A merchant of record (Paddle, Lemon Squeezy, and Stripe's own Managed Payments) is the legal seller to the buyer. It collects and pays the sales tax and VAT, issues the invoices and handles refunds and chargebacks, and pays you what is left.
+
+| | You sell through a payment processor (our setup) | You sell through a merchant of record |
+|---|---|---|
+| Who owes sales tax and VAT | You, in every place you pass a threshold, with no minimum for foreign sellers in the UK and EU | The merchant of record |
+| Registrations and returns | Yours, or a partner's | Not yours |
+| Fees | Lower. Ours are about 2.9% + $0.30 plus 0.5% for tax calculation | Higher. The headline rate at Paddle and Lemon Squeezy is about 5% + $0.50 per sale, with extras; check their pages |
+| Control | Your checkout, your customer relationship | Their checkout, their terms, their payout schedule |
+| Your income tax | Unchanged | Unchanged; you still report what you receive |
+
+Sources: [Stripe, Managed Payments](https://docs.stripe.com/payments/managed-payments), plus the vendors' own pricing pages. The fee figures above are headline rates reported by comparison sites; confirm them.
+
+We began with a merchant of record in our plan, then chose a plain processor for lower fees and control, knowing the tax work would be ours. It is a fair trade-off in either direction. For a very small seller with international buyers, paying the extra percentage can be cheaper than the registrations, returns and mistakes. **Check which mode your own payment links use**: we found our own notes disagreed on whether a Stripe feature related to this was on, so our tax section above assumes we are the seller until we confirm.
+
+## 19. Checklist
 
 Before launch:
 
@@ -225,13 +341,14 @@ Before launch:
 - [ ] Update path removes the old version, tested with older versions installed.
 - [ ] Framework licence tier checked; thresholds recorded; third-party notices complete; copyleft scan done.
 - [ ] Download counter excludes your own traffic; alerts working.
-- [ ] Tax position for the countries you sell to decided and written down; registrations submitted where needed.
+- [ ] Tax position for the countries you sell to decided and written down; registrations submitted where needed ([section 18](#18-tax-considerations)).
+- [ ] Expense ledger started, with a proof column and "approx." marked on anything not backed by a receipt ([section 17](#17-what-it-cost)).
 - [ ] Ads use real, current screenshots; budget and publish done by the human.
 - [ ] Nightly backup running, one restore tested, failure notification works.
 - [ ] Reports refresh before they are collected; decisions queue exists.
 - [ ] Windows, if promised: CI green, and no date announced before it is.
 
-## 18. What Claude should never do for you
+## 20. What Claude should never do for you
 
 - **Enter passwords, card numbers, bank details, government IDs, API keys or tokens** into any field or file. You type them, or use your password manager.
 - **Create accounts or sign in for you.** It gives you the steps.
