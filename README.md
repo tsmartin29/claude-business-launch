@@ -224,9 +224,11 @@ What is lightly used or new: the Windows pipeline, the signing for Windows, the 
 |---|--:|--:|
 | AI (Claude plan + extra usage for running many sessions at once) | ~70% | ~$1,600 |
 | Company setup (LLC filing, registered agent) | ~15% | ~$375 |
-| Ads (Meta / Instagram) | ~7% | ~$170 |
+| Ads (Meta / Instagram)\* | ~7% | ~$170 |
 | Developer accounts and hosting (Apple Developer, domain, website host) | ~6% | ~$130 |
 | Everything else (email tools) | ~2% | ~$40 |
+
+\* Ad spend is increasing: this is the first weeks' spend only, and budgets are going up as the products launch, so this share will grow.
 
 What that tells you:
 - **The AI is the business's biggest cost by far**, and most of it is usage beyond the plan from running many sessions in parallel. Pacing it (playbook section 6, [claude-local-first](https://github.com/tsmartin29/claude-local-first)) is the biggest lever.
